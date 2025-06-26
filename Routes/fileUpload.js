@@ -1,0 +1,31 @@
+const express = require("express");
+const router = express.Router();
+const {
+  createProduct,
+  getMyProducts,
+  updateProduct,
+  getSingleProduct,
+  deleteProduct,
+} = require("../Controllers/product");
+const { auth, isSeller } = require("../Middleware/Auth");
+const {
+  getSellerOrders,
+  updateOrderStatusBySeller,
+} = require("../Controllers/SellerOrderController");
+const getSellerStats = require("../Controllers/sellerDashboardController");
+
+// create product by seller
+router.post("/createProduct", auth, isSeller, createProduct);
+router.get("/getAllProducts", auth, isSeller, getMyProducts);
+router.put("/updateProduct:id", auth, isSeller, updateProduct);
+router.get("/getSingleProduct:id", auth, isSeller, getSingleProduct);
+router.delete("/deleteProduct:id", auth, isSeller, deleteProduct);
+
+// Seller Order Routers
+router.get("/getOrders", auth, getSellerOrders);
+router.put("/UpdateOrder:id", auth, updateOrderStatusBySeller);
+
+// Seller Dashboard Routes
+router.get("/getSellerStats", auth, getSellerStats);
+
+module.exports = router;
