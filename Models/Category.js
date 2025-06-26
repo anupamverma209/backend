@@ -9,17 +9,17 @@ const categorySchema = new mongoose.Schema(
       maxlength: 100,
       unique: true,
     },
-
     slug: {
       type: String,
       lowercase: true,
       trim: true,
     },
-
-    subCategories: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubCategory",
-    },
+    subCategories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SubCategory",
+      },
+    ],
   },
   { timestamps: true }
 );

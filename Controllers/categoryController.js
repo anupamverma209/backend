@@ -6,41 +6,46 @@ const slugify = require("slugify");
 const mongoose = require("mongoose");
 
 // create category controller
-
 exports.createCategory = async (req, res) => {
   try {
     const { name, subCategories } = req.body;
 
-    if (!name) {
+    // ✅ 1. Validate category name
+    if (!name || name.trim() === "") {
       return res.status(400).json({
         success: false,
         message: "Category name is required",
       });
     }
 
-    const existingCategory = await Category.findOne({ name });
-    if (existingCategory) {
+    // ✅ 2. Check if category already exists
+    const existing = await Category.findOne({ name: name.trim() });
+    if (existing) {
       return res.status(400).json({
         success: false,
         message: "Category already exists",
       });
     }
 
+    // ✅ 3. Generate slug
     const slug = slugify(name, { lower: true });
 
+    // ✅ 4. Prepare category data
     const categoryData = {
-      name,
+      name: name.trim(),
       slug,
     };
 
-    // ✅ Check if subCategories is valid and convert to ObjectIds
+    // ✅ 5. If subCategories are provided, validate ObjectIds
     if (Array.isArray(subCategories) && subCategories.length > 0) {
-      // Validate and convert
-      categoryData.subCategories = subCategories.map((id) =>
-        mongoose.Types.ObjectId(id)
-      );
+      const validSubCategoryIds = subCategories
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => new mongoose.Types.ObjectId(id));
+
+      categoryData.subCategories = validSubCategoryIds;
     }
 
+    // ✅ 6. Create and save the category
     const category = await Category.create(categoryData);
 
     res.status(201).json({
@@ -61,8 +66,8 @@ exports.createCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find()
-      .populate("subCategories") // populate referenced SubCategory documents
-      .sort({ createdAt: -1 }); // newest first
+      .populate("subCategories") // populate all subcategory details
+      .sort({ createdAt: -1 }); // sort newest first
 
     res.status(200).json({
       success: true,
@@ -81,46 +86,42 @@ exports.getAllCategories = async (req, res) => {
 };
 
 //update category controller
+
 exports.updateCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id;
-    const { name } = req.body;
+    const { id } = req.params; // Category ID
+    const { name, subCategories } = req.body;
 
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "Category name is required",
-      });
-    }
-
-    const existingCategory = await Category.findById(categoryId);
-
-    if (!existingCategory) {
+    // 1. Find category by ID
+    const category = await Category.findById(id);
+    if (!category) {
       return res.status(404).json({
         success: false,
         message: "Category not found",
       });
     }
 
-    // Check if the new name is used by another category
-    const duplicate = await Category.findOne({ name });
-    if (duplicate && duplicate._id.toString() !== categoryId) {
-      return res.status(400).json({
-        success: false,
-        message: "Another category with this name already exists",
-      });
+    // 2. Update name and slug if provided
+    if (name) {
+      category.name = name.trim();
+      category.slug = slugify(name, { lower: true });
     }
 
-    // Update name and slug
-    existingCategory.name = name;
-    existingCategory.slug = slugify(name, { lower: true });
+    // 3. Update subCategories if provided
+    if (Array.isArray(subCategories)) {
+      const validSubCategoryIds = subCategories
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => new mongoose.Types.ObjectId(id));
+      category.subCategories = validSubCategoryIds;
+    }
 
-    const updatedCategory = await existingCategory.save();
+    // 4. Save updated category
+    await category.save();
 
     res.status(200).json({
       success: true,
       message: "Category updated successfully",
-      category: updatedCategory,
+      category,
     });
   } catch (error) {
     console.error("Update Category Error:", error);
@@ -137,10 +138,10 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id;
+    const { id } = req.params;
 
-    // Step 1: Check if category exists
-    const category = await Category.findById(categoryId);
+    // 1. Check if category exists
+    const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({
         success: false,
@@ -148,51 +149,18 @@ exports.deleteCategory = async (req, res) => {
       });
     }
 
-    // Step 2: Check if products are using this category
-    const linkedProducts = await Product.find({ category: categoryId });
-    if (linkedProducts.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Cannot delete. ${linkedProducts.length} product(s) are still using this category.`,
-      });
-    }
-
-    // Step 3: Delete all subcategories of this category
-    await SubCategory.deleteMany({ category: categoryId });
-
-    // Step 4: Delete the category
-    await Category.findByIdAndDelete(categoryId);
+    // 2. Delete category
+    await Category.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: "Category and all its subcategories deleted successfully",
+      message: "Category deleted successfully",
     });
   } catch (error) {
     console.error("Delete Category Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while deleting category",
-      error: error.message,
-    });
-  }
-};
-
-exports.getCategories = async (req, res) => {
-  try {
-    const categories = await Category.find()
-      .select("name slug _id")
-      .sort({ name: 1 });
-
-    res.status(200).json({
-      success: true,
-      count: categories.length,
-      categories,
-    });
-  } catch (error) {
-    console.error("Get Categories Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error while fetching categories",
       error: error.message,
     });
   }
