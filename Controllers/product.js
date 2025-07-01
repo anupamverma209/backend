@@ -1,4 +1,6 @@
 const Product = require("../Models/Product");
+const Categories = require("../Models/Category");
+const SubCategories = require("../Models/SubCategory");
 const cloudinary = require("cloudinary").v2;
 
 // Helper: Check file type
@@ -148,6 +150,7 @@ exports.createProduct = async (req, res) => {
       description,
       price,
       category,
+      subCategory,
       stock,
       artisanName,
       artisanOrigin,
@@ -167,12 +170,25 @@ exports.createProduct = async (req, res) => {
       !price ||
       !category ||
       !stock ||
-      !imageFiles
+      !imageFiles ||
+      !subCategory
     ) {
       return res.status(400).json({
         success: false,
         message:
           "title, description, price, category, stock and at least one image are required",
+      });
+    }
+    if (!Categories.findById(category)) {
+      return res.status(400).json({
+        message: "Invalid category ID",
+        success: false,
+      });
+    }
+    if (!SubCategories.findById(subCategory)) {
+      return res.status(400).json({
+        message: "Invalid sub-category ID",
+        success: false,
       });
     }
 
@@ -237,6 +253,7 @@ exports.createProduct = async (req, res) => {
       description,
       price,
       category,
+      subCategory,
       stock,
       artisan: {
         name: artisanName,
@@ -274,9 +291,12 @@ exports.getMyProducts = async (req, res) => {
   try {
     const userId = req.user.id; // JWT ke through aya hua seller id
 
-    const products = await Product.find({ createdBy: userId }).sort({
-      createdAt: -1,
-    });
+    const products = await Product.find({ createdBy: userId })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("category", "name") // populate category name only
+      .populate("subCategory", "name"); // populate subCategory name only; // Populate creator details
 
     return res.status(200).json({
       success: true,

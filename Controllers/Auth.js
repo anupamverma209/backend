@@ -191,6 +191,12 @@ const Login = async (req, res) => {
         success: false,
       });
     }
+    if (!user.isActive) {
+      return res.status(403).json({
+        message: "you are blocked",
+        success: false,
+      });
+    }
     // Prepare payload for JWT
     let payload = {
       id: user._id,

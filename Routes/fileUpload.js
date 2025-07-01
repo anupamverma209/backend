@@ -12,7 +12,11 @@ const {
   getSellerOrders,
   updateOrderStatusBySeller,
 } = require("../Controllers/SellerOrderController");
-const getSellerStats = require("../Controllers/sellerDashboardController");
+const {
+  getSellerStats,
+  getMonthlySalesData,
+  getTopSellingProduct,
+} = require("../Controllers/sellerDashboardController");
 
 // create product by seller
 router.post("/createProduct", auth, isSeller, createProduct);
@@ -26,6 +30,8 @@ router.get("/getOrders", auth, getSellerOrders);
 router.put("/UpdateOrder:id", auth, updateOrderStatusBySeller);
 
 // Seller Dashboard Routes
-router.get("/getSellerStats", auth, getSellerStats);
+router.get("/getSellerStats", auth, isSeller, getSellerStats);
+router.get("/getMonthlySalesData", auth, isSeller, getMonthlySalesData);
+router.get("/getTopSellingProduct", auth, isSeller, getTopSellingProduct);
 
 module.exports = router;

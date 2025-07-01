@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isActive: {
+    type: Boolean,
+    default: true, // true = active, false = blocked
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
