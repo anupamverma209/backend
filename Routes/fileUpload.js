@@ -6,6 +6,8 @@ const {
   updateProduct,
   getSingleProduct,
   deleteProduct,
+  getAllProductsforHome,
+  getSingleProductById,
 } = require("../Controllers/product");
 const { auth, isSeller } = require("../Middleware/Auth");
 const {
@@ -33,5 +35,9 @@ router.put("/UpdateOrder:id", auth, updateOrderStatusBySeller);
 router.get("/getSellerStats", auth, isSeller, getSellerStats);
 router.get("/getMonthlySalesData", auth, isSeller, getMonthlySalesData);
 router.get("/getTopSellingProduct", auth, isSeller, getTopSellingProduct);
+
+//get All Product
+router.get("/getAllProductsforHome", getAllProductsforHome);
+router.get("/getSingleProductById/:id", getSingleProductById);
 
 module.exports = router;

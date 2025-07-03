@@ -7,7 +7,6 @@ const cloudinary = require("cloudinary").v2;
 function isFileTypeSupported(type, supportedTypes) {
   return supportedTypes.includes(type);
 }
-
 // Helper: Upload to Cloudinary with dynamic resource_type
 async function fileUploadToCloudinary(file, folder, type) {
   return await cloudinary.uploader.upload(file.tempFilePath, {
@@ -158,7 +157,11 @@ exports.createProduct = async (req, res) => {
       tags = [],
       isFeatured = false,
       isHandmade = true,
+      color,
+      size,
+      weight,
     } = req.body;
+    console.log("Request body:", size, color);
 
     const imageFiles = req.files?.image;
     const videoFiles = req.files?.video;
@@ -169,14 +172,13 @@ exports.createProduct = async (req, res) => {
       !description ||
       !price ||
       !category ||
-      !stock ||
       !imageFiles ||
       !subCategory
     ) {
       return res.status(400).json({
         success: false,
         message:
-          "title, description, price, category, stock and at least one image are required",
+          "title, description, price, category, at least one image are required",
       });
     }
     if (!Categories.findById(category)) {
@@ -268,6 +270,9 @@ exports.createProduct = async (req, res) => {
       ratings: 0,
       numReviews: 0,
       reviews: [],
+      size,
+      color,
+      weight,
     });
 
     const savedProduct = await newProduct.save();
@@ -545,6 +550,57 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong while deleting product",
+    });
+  }
+};
+
+exports.getAllProductsforHome = async (req, res) => {
+  try {
+    const products = await Product.find({ status: "Approved" })
+      .populate("category", "name")
+      .populate("subCategory", "name")
+      .sort({ createdAt: -1 }) // latest first
+      .limit();
+
+    res.status(200).json({
+      success: true,
+      data: products,
+      count: products.length,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching products",
+    });
+  }
+};
+
+exports.getSingleProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id)
+      .populate("category", "name")
+      .populate("subCategory", "name")
+      .populate("reviews.user", "name email"); // reviewer details
+
+    if (!product || product.status !== "Approved") {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found or not approved",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching product details",
     });
   }
 };

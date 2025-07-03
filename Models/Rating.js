@@ -22,6 +22,10 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    discount: {
+      type: Number,
+      default: 0, // Default discount is 0 if not provided
+    },
   },
   {
     timestamps: true, // adds createdAt and updatedAt fields

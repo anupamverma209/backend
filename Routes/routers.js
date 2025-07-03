@@ -8,6 +8,7 @@ const {
   sendOtp,
   verifyOtpAndLogin,
   logout,
+  SignupByMobile,
 } = require("../Controllers/Auth");
 const { auth, isAdmin, isUser, isSeller } = require("../Middleware/Auth");
 const { upload } = require("../Middleware/upload");
@@ -37,15 +38,17 @@ router.post("/send-otp", sendOtp); // mobile number signup
 router.post("/verify-otp", verifyOtpAndLogin); // mobile number login user
 router.post("/logout", auth, logout);
 router.post("/signup", signup);
-//router.post("/signupByMobile", SignupByMobile);
 router.post("/verify", verifyOtp);
 router.post("/login", Login);
 router.post("/reSendOtp", reSendOtp);
+
+// signup By mobile number
+
 // All Review Controllers
 router.post("/createRating", auth, isUser, createReview);
-router.put("/updateReview:reviewId", auth, updateReview);
-router.delete("/deleteReview:reviewId", auth, deleteReview);
-router.get("/getAllReviews:productId", auth, getAllReviewsForProduct);
+router.put("/updateReview/:reviewId", auth, updateReview);
+router.delete("/deleteReview/:reviewId", auth, deleteReview);
+router.get("/getAllReviews/:productId", auth, getAllReviewsForProduct);
 
 // user profile route
 router.get("/userProfile", auth, getUserProfile);

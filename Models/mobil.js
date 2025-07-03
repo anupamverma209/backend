@@ -4,7 +4,6 @@ const mobileSchema = new mongoose.Schema({
   mobile: {
     type: String,
     required: true,
-    unique: true,
   },
   accountType: {
     type: String,
