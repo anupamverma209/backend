@@ -21,6 +21,7 @@ const {
 const {
   getUserProfile,
   changePassword,
+  updateUserProfile,
 } = require("../Controllers/userProfileController");
 const {
   createOrder,
@@ -31,6 +32,16 @@ const {
   getAllOrders,
   deleteOrder,
 } = require("../Controllers/userOrderController");
+const {
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getSingleBlogById,
+  getAllBlogs,
+  commentOnBlog,
+  deleteComment,
+  incrementViews,
+} = require("../Controllers/blogController");
 
 // router.get("/cards", getAllCards);
 
@@ -53,6 +64,8 @@ router.get("/getAllReviews/:productId", auth, getAllReviewsForProduct);
 // user profile route
 router.get("/userProfile", auth, getUserProfile);
 router.post("/changePassword", auth, changePassword);
+router.put("/updateUserProfile", auth, updateUserProfile);
+
 // create order Router
 router.post("/createOrder", auth, isUser, createOrder);
 router.get("/getAllOrder", auth, isUser, getMyOrders);
@@ -62,32 +75,15 @@ router.put("/updateOrderStatus:id", auth, isAdmin, updateOrderStatus); // only f
 router.get("/getAllOrders", auth, isAdmin, getAllOrders); //private route for admin to get
 router.delete("/deleteOrder:id", auth, deleteOrder); // delete order by id
 
-// private routes for different user roles
-router.get("/Admin", auth, isSeller, (req, res) => {
-  res.send("Welcome to the Admin dashboard");
-  res.status(200).json({
-    message: "User authenticated successfully",
-    success: true,
-    user: req.user,
-  });
-});
-
-router.get("/User", auth, isUser, (req, res) => {
-  res.send("Welcome to the User dashboard");
-  res.status(200).json({
-    message: "User authenticated successfully",
-    success: true,
-    user: req.user,
-  });
-});
-
-router.get("/Seller", auth, isSeller, (req, res) => {
-  res.send("Welcome to the Seller dashboard");
-  res.status(200).json({
-    message: "User authenticated successfully",
-    success: true,
-    user: req.user,
-  });
-});
+// Blog Routes
+router.post("/createBlog", auth, createBlog); // create blog
+router.put("/updateBlog/:id", auth, updateBlog); // update blog
+//testing
+router.delete("/deleteBlog/:id", auth, deleteBlog);
+router.get("/getSingleBlogById/:id", auth, getSingleBlogById);
+router.get("/getAllBlogs", getAllBlogs); // first test this route
+router.post("/commentOnBlog/:id", auth, commentOnBlog);
+router.delete("/blogs/:blogId/comments/:commentId", auth, deleteComment);
+router.patch("/blogs/:id/views", incrementViews);
 
 module.exports = router;

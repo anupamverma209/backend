@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -37,6 +38,28 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true, // true = active, false = blocked
+  },
+  image: {
+    type: String,
+  },
+  mobileNumber: {
+    type: String,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"], // optional but safe to limit values
+  },
+  dateOfBirth: {
+    type: Date,
+  },
+  alternativeMobileNumber: {
+    type: String,
+  },
+  hintName: {
+    type: String,
+  },
+  location: {
+    type: String,
   },
 });
 

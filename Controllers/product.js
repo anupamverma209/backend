@@ -16,6 +16,161 @@ async function fileUploadToCloudinary(file, folder, type) {
 }
 
 // createProduct function to handle product creation with images/videos only for Sellres
+
+exports.createProduct = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      price,
+      discountedPrice,
+      category,
+      subCategory,
+      stock,
+      artisanName,
+      artisanOrigin,
+      material = "Mixed",
+      tags = [],
+      isFeatured = false,
+      isHandmade = true,
+      trending = false,
+      color,
+      size,
+      weight,
+      status, // allow status override if you want, or default to "Pending"
+    } = req.body;
+
+    console.log("Request body:", size, color);
+
+    const imageFiles = req.files?.image;
+    const videoFiles = req.files?.video;
+
+    // ✅ Only image is required
+    if (!title || !description || !price || !category || !imageFiles) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "title, description, price, category, subCategory, at least one image are required",
+      });
+    }
+
+    // ✅ validate category
+    const categoryExists = await Categories.findById(category);
+    if (!categoryExists) {
+      return res.status(400).json({
+        message: "Invalid category ID",
+        success: false,
+      });
+    }
+
+    // ✅ validate subcategory
+    const subCategoryExists = await SubCategories.findById(subCategory);
+    if (!subCategoryExists) {
+      return res.status(400).json({
+        message: "Invalid sub-category ID",
+        success: false,
+      });
+    }
+
+    // ✅ process images & videos
+    const supportedImageTypes = ["png", "jpeg", "jpg", "webp"];
+    const supportedVideoTypes = ["mp4", "mov", "webm"];
+    const mediaArray = [];
+
+    const imageList = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
+    const videoList = Array.isArray(videoFiles)
+      ? videoFiles
+      : videoFiles
+      ? [videoFiles]
+      : [];
+
+    // upload images
+    for (const file of imageList) {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (!isFileTypeSupported(ext, supportedImageTypes)) {
+        return res.status(400).json({
+          success: false,
+          message: `Image file type '${ext}' is not supported`,
+        });
+      }
+      const upload = await fileUploadToCloudinary(
+        file,
+        "Achichiz/images",
+        "image"
+      );
+      mediaArray.push({
+        public_id: upload.public_id,
+        url: upload.secure_url,
+        type: "image",
+      });
+    }
+
+    // upload videos
+    for (const file of videoList) {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (!isFileTypeSupported(ext, supportedVideoTypes)) {
+        return res.status(400).json({
+          success: false,
+          message: `Video file type '${ext}' is not supported`,
+        });
+      }
+      const upload = await fileUploadToCloudinary(
+        file,
+        "Achichiz/videos",
+        "video"
+      );
+      mediaArray.push({
+        public_id: upload.public_id,
+        url: upload.secure_url,
+        type: "video",
+      });
+    }
+
+    // create product
+    const newProduct = new Product({
+      title,
+      description,
+      price,
+      discountedPrice,
+      category,
+      subCategory,
+      stock,
+      artisan: {
+        name: artisanName,
+        origin: artisanOrigin,
+      },
+      material,
+      tags,
+      isFeatured,
+      isHandmade,
+      trending,
+      images: mediaArray,
+      createdBy: req.user.id,
+      ratings: 0,
+      numReviews: 0,
+      reviews: [],
+      size,
+      color,
+      weight, // you may fix weight type in the schema as noted
+      status: status || "Pending", // fallback
+    });
+
+    const savedProduct = await newProduct.save();
+
+    return res.status(201).json({
+      success: true,
+      data: savedProduct,
+      message: "Product created successfully with images/videos",
+    });
+  } catch (error) {
+    console.error("Product creation error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while creating the product",
+    });
+  }
+};
+
 // exports.createProduct = async (req, res) => {
 //   try {
 //     const {
@@ -142,156 +297,157 @@ async function fileUploadToCloudinary(file, folder, type) {
 //   }
 // };
 
-exports.createProduct = async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      price,
-      category,
-      subCategory,
-      stock,
-      artisanName,
-      artisanOrigin,
-      material = "Mixed",
-      tags = [],
-      isFeatured = false,
-      isHandmade = true,
-      color,
-      size,
-      weight,
-    } = req.body;
-    console.log("Request body:", size, color);
+// exports.createProduct = async (req, res) => {
+//   try {
+//     const {
+//       title,
+//       description,
+//       price,
+//       category,
+//       subCategory,
+//       stock,
+//       artisanName,
+//       artisanOrigin,
+//       material = "Mixed",
+//       tags = [],
+//       isFeatured = false,
+//       isHandmade = true,
+//       color,
+//       size,
+//       weight,
+//     } = req.body;
+//     console.log("Request body:", size, color);
 
-    const imageFiles = req.files?.image;
-    const videoFiles = req.files?.video;
+//     const imageFiles = req.files?.image;
+//     const videoFiles = req.files?.video;
 
-    // ✅ Only image is required
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !category ||
-      !imageFiles ||
-      !subCategory
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "title, description, price, category, at least one image are required",
-      });
-    }
-    if (!Categories.findById(category)) {
-      return res.status(400).json({
-        message: "Invalid category ID",
-        success: false,
-      });
-    }
-    if (!SubCategories.findById(subCategory)) {
-      return res.status(400).json({
-        message: "Invalid sub-category ID",
-        success: false,
-      });
-    }
+//     // ✅ Only image is required
+//     if (
+//       !title ||
+//       !description ||
+//       !price ||
+//       !category ||
+//       !imageFiles ||
+//       !subCategory
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message:
+//           "title, description, price, category, at least one image are required",
+//       });
+//     }
+//     if (!Categories.findById(category)) {
+//       return res.status(400).json({
+//         message: "Invalid category ID",
+//         success: false,
+//       });
+//     }
+//     if (!SubCategories.findById(subCategory)) {
+//       return res.status(400).json({
+//         message: "Invalid sub-category ID",
+//         success: false,
+//       });
+//     }
 
-    const supportedImageTypes = ["png", "jpeg", "jpg", "webp"];
-    const supportedVideoTypes = ["mp4", "mov", "webm"];
-    const mediaArray = [];
+//     const supportedImageTypes = ["png", "jpeg", "jpg", "webp"];
+//     const supportedVideoTypes = ["mp4", "mov", "webm"];
+//     const mediaArray = [];
 
-    const imageList = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
-    const videoList = Array.isArray(videoFiles)
-      ? videoFiles
-      : videoFiles
-      ? [videoFiles]
-      : [];
+//     const imageList = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
+//     const videoList = Array.isArray(videoFiles)
+//       ? videoFiles
+//       : videoFiles
+//       ? [videoFiles]
+//       : [];
 
-    // ✅ Upload all images
-    for (const file of imageList) {
-      const ext = file.name.split(".").pop().toLowerCase();
-      if (!isFileTypeSupported(ext, supportedImageTypes)) {
-        return res.status(400).json({
-          success: false,
-          message: `Image file type '${ext}' is not supported`,
-        });
-      }
+//     // ✅ Upload all images
+//     for (const file of imageList) {
+//       const ext = file.name.split(".").pop().toLowerCase();
+//       if (!isFileTypeSupported(ext, supportedImageTypes)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Image file type '${ext}' is not supported`,
+//         });
+//       }
 
-      const upload = await fileUploadToCloudinary(
-        file,
-        "Achichiz/images",
-        "image"
-      );
-      mediaArray.push({
-        public_id: upload.public_id,
-        url: upload.secure_url,
-        type: "image",
-      });
-    }
+//       const upload = await fileUploadToCloudinary(
+//         file,
+//         "Achichiz/images",
+//         "image"
+//       );
+//       mediaArray.push({
+//         public_id: upload.public_id,
+//         url: upload.secure_url,
+//         type: "image",
+//       });
+//     }
 
-    // ✅ Upload all videos (if provided)
-    for (const file of videoList) {
-      const ext = file.name.split(".").pop().toLowerCase();
-      if (!isFileTypeSupported(ext, supportedVideoTypes)) {
-        return res.status(400).json({
-          success: false,
-          message: `Video file type '${ext}' is not supported`,
-        });
-      }
+//     // ✅ Upload all videos (if provided)
+//     for (const file of videoList) {
+//       const ext = file.name.split(".").pop().toLowerCase();
+//       if (!isFileTypeSupported(ext, supportedVideoTypes)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Video file type '${ext}' is not supported`,
+//         });
+//       }
 
-      const upload = await fileUploadToCloudinary(
-        file,
-        "Achichiz/videos",
-        "video"
-      );
-      mediaArray.push({
-        public_id: upload.public_id,
-        url: upload.secure_url,
-        type: "video",
-      });
-    }
+//       const upload = await fileUploadToCloudinary(
+//         file,
+//         "Achichiz/videos",
+//         "video"
+//       );
+//       mediaArray.push({
+//         public_id: upload.public_id,
+//         url: upload.secure_url,
+//         type: "video",
+//       });
+//     }
 
-    // ✅ Create Product
-    const newProduct = new Product({
-      title,
-      description,
-      price,
-      category,
-      subCategory,
-      stock,
-      artisan: {
-        name: artisanName,
-        origin: artisanOrigin,
-      },
-      material,
-      tags,
-      isFeatured,
-      isHandmade,
-      images: mediaArray,
-      createdBy: req.user.id,
-      ratings: 0,
-      numReviews: 0,
-      reviews: [],
-      size,
-      color,
-      weight,
-    });
+//     // ✅ Create Product
+//     const newProduct = new Product({
+//       title,
+//       description,
+//       price,
+//       category,
+//       subCategory,
+//       stock,
+//       artisan: {
+//         name: artisanName,
+//         origin: artisanOrigin,
+//       },
+//       material,
+//       tags,
+//       isFeatured,
+//       isHandmade,
+//       images: mediaArray,
+//       createdBy: req.user.id,
+//       ratings: 0,
+//       numReviews: 0,
+//       reviews: [],
+//       size,
+//       color,
+//       weight,
+//     });
 
-    const savedProduct = await newProduct.save();
+//     const savedProduct = await newProduct.save();
 
-    return res.status(201).json({
-      success: true,
-      data: savedProduct,
-      message: "Product created successfully with images/videos",
-    });
-  } catch (error) {
-    console.error("Product creation error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong while creating the product",
-    });
-  }
-};
+//     return res.status(201).json({
+//       success: true,
+//       data: savedProduct,
+//       message: "Product created successfully with images/videos",
+//     });
+//   } catch (error) {
+//     console.error("Product creation error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Something went wrong while creating the product",
+//     });
+//   }
+// };
 
 // get my products function to fetch products created by the seller
+
 exports.getMyProducts = async (req, res) => {
   try {
     const userId = req.user.id; // JWT ke through aya hua seller id

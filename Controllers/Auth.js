@@ -215,7 +215,7 @@ const Login = async (req, res) => {
     if (await bcrypt.compare(password, user.password)) {
       // create JWT token
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "3h",
+        expiresIn: "10h",
       });
       user.token = token; // Store the token in the user object
       user.password = undefined; // Remove password from the response
