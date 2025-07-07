@@ -7,7 +7,6 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     orderItems: [
       {
         product: {
@@ -36,19 +35,16 @@ const orderSchema = new mongoose.Schema(
       country: { type: String, default: "India" },
       phone: { type: String, required: true },
     },
-
     paymentMethod: {
       type: String,
       enum: ["COD", "Online"],
       default: "COD",
     },
-
     paymentStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
-
     totalAmount: {
       type: Number,
       required: true,

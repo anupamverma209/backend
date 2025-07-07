@@ -195,9 +195,16 @@ const Login = async (req, res) => {
     }
 
     let user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        message: "Email not verified",
         success: false,
       });
     }
@@ -218,7 +225,7 @@ const Login = async (req, res) => {
     if (await bcrypt.compare(password, user.password)) {
       // create JWT token
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "3h",
+        expiresIn: "10h",
       });
       user.token = token; // Store the token in the user object
       user.password = undefined; // Remove password from the response
@@ -256,6 +263,7 @@ const Login = async (req, res) => {
 const sendOtp = async (req, res) => {
   try {
     const { mobile } = req.body;
+    console.log("Mobile number received:", mobile);
 
     if (!mobile) {
       return res
@@ -264,10 +272,6 @@ const sendOtp = async (req, res) => {
     }
 
     let user = await Mobile.findOne({ mobile });
-
-    if (!user) {
-      user = await Mobile.create({ mobile });
-    }
 
     const otp = generateOtp();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // expires in 5 minutes

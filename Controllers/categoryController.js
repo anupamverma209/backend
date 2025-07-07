@@ -17,7 +17,6 @@ exports.createCategory = async (req, res) => {
         message: "Category name is required",
       });
     }
-
     // ✅ 2. Check if category already exists
     const existing = await Category.findOne({ name: name.trim() });
     if (existing) {

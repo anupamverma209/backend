@@ -17,12 +17,15 @@ const productSchema = new mongoose.Schema(
       required: [true, "Product price is required"],
       min: [0, "Price can't be negative"],
     },
+    discountedPrice: {
+      type: Number,
+      min: [0, "Discounted price can't be negative"],
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Product category is required"],
     },
-
     //  Sub-category reference
     subCategory: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +35,7 @@ const productSchema = new mongoose.Schema(
 
     stock: {
       type: Number,
-      default: 1,
+      default: 3,
       min: [0, "Stock can't be negative"],
     },
     artisan: {
@@ -69,6 +72,9 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    weight: {
+      type: Number,
+    },
     reviews: [
       {
         user: {
@@ -94,6 +100,15 @@ const productSchema = new mongoose.Schema(
       type: String,
       enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
+    },
+    trending: {
+      type: Boolean,
+      default: false, // true if product is trending
+    },
+    size: [String],
+    color: [String], // Array of color options
+    weight: {
+      type: String,
     },
   },
   { timestamps: true }

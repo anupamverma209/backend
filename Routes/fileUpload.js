@@ -7,9 +7,14 @@ const {
   updateProduct,
   getSingleProduct,
   deleteProduct,
+<<<<<<< HEAD
   getSingleProductById,
   getAllProductsforHome,
   getAllProducts,
+=======
+  getAllProductsforHome,
+  getSingleProductById,
+>>>>>>> refs/remotes/origin/master
 } = require("../Controllers/product");
 const { auth, isSeller } = require("../Middleware/Auth");
 const {
@@ -42,5 +47,9 @@ router.get("/getAllProductsforHome",getAllProductsforHome)
 router.get("/getSingleProductById/:id", getSingleProductById);
 router.get("/getallproductforcategory",getAllProducts)
 
+
+//get All Product
+router.get("/getAllProductsforHome", getAllProductsforHome);
+router.get("/getSingleProductById/:id", getSingleProductById);
 
 module.exports = router;

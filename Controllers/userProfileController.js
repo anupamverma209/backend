@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 const User = require("../Models/user");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
+<<<<<<< HEAD
 const Product=require("../Models/Product")
+=======
+>>>>>>> refs/remotes/origin/master
 
 async function fileUploadToCloudinary(file, folder, type) {
   return await cloudinary.uploader.upload(file.tempFilePath, {
@@ -146,6 +149,7 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
+<<<<<<< HEAD
 
 
 
@@ -286,3 +290,5 @@ exports.removeFromWishlistController = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> refs/remotes/origin/master
