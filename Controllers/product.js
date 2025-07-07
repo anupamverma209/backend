@@ -716,7 +716,7 @@ exports.getAllProductsforHome = async (req, res) => {
       .populate("category", "name")
       .populate("subCategory", "name")
       .sort({ createdAt: -1 }) // latest first
-      .limit();
+      .limit(4);
 
     res.status(200).json({
       success: true,
@@ -765,6 +765,26 @@ exports.getSingleProductById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong while fetching product details",
+    });
+  }
+};
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ status: "Approved" })
+      .sort({ createdAt: -1 }) // latest first
+      .populate('category')     // populate category
+      .populate('subCategory'); // populate subCategory
+
+    res.status(200).json({
+      success: true,
+      data: products,
+      count: products.length,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching products",
     });
   }
 };

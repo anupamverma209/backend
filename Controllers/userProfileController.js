@@ -1,6 +1,11 @@
+const mongoose = require("mongoose");
 const User = require("../Models/user");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
+<<<<<<< HEAD
+const Product=require("../Models/Product")
+=======
+>>>>>>> refs/remotes/origin/master
 
 async function fileUploadToCloudinary(file, folder, type) {
   return await cloudinary.uploader.upload(file.tempFilePath, {
@@ -144,3 +149,146 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
+<<<<<<< HEAD
+
+
+
+exports.addToCartController = async (req, res) => {
+  try {
+    const userId = req.user.id; // from auth middleware
+    const { productid } = req.params;
+
+    if (!productid) {
+      return res.status(400).json({ success: false, message: "Product ID is missing in URL." });
+    }
+
+    // Check if product exists
+    const product = await Product.findById(productid);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found." });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+
+    // Check if product is already in cart
+    if (user.addtocart.includes(productid)) {
+      return res.status(409).json({ success: false, message: "Product already in cart." });
+    }
+
+    // Add product to cart
+    user.addtocart.push(productid);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Product added to cart.",
+      cart: user.addtocart,
+    });
+  } catch (error) {
+    console.error("❌ Error in addToCartController:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+exports.removeCartItem = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productid } = req.params;
+
+    if (!productid) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          addtocart: new mongoose.Types.ObjectId(productid),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Item removed from cart successfully" });
+  } catch (error) {
+    console.error("Remove Cart Item Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// Add to Wishlist
+exports.addToWishlistController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productid } = req.params;
+
+    if (!productid) {
+      return res.status(400).json({ success: false, message: "Product ID is missing in URL." });
+    }
+
+    const product = await Product.findById(productid);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found." });
+    }
+
+    const user = await User.findById(userId);
+
+    if (user.addtowishlist.includes(productid)) {
+      return res.status(409).json({ success: false, message: "Product already in wishlist." });
+    }
+
+    user.addtowishlist.push(productid);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Product added to wishlist.",
+      wishlist: user.addtowishlist,
+    });
+  } catch (error) {
+    console.error("❌ Error in addToWishlistController:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+// Remove from Wishlist
+exports.removeFromWishlistController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productid } = req.params;
+
+    if (!productid) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          addtowishlist: new mongoose.Types.ObjectId(productid),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Item removed from wishlist successfully" });
+  } catch (error) {
+    console.error("Remove Wishlist Item Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+=======
+>>>>>>> refs/remotes/origin/master
