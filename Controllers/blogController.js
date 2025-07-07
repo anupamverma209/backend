@@ -175,7 +175,10 @@ exports.getSingleBlogById = async (req, res) => {
     }
 
     // 2️⃣ find blog by ID
-    const blog = await Blog.findById(id).populate("author", "name email");
+    const blog = await Blog.findById(id).populate(
+      "comments.user",
+      "name email"
+    );
     if (!blog) {
       return res.status(404).json({
         success: false,
@@ -184,21 +187,20 @@ exports.getSingleBlogById = async (req, res) => {
     }
 
     // 3️⃣ related blogs
-    const relatedBlogs = await Blog.find({
-      _id: { $ne: blog._id },
-      $or: [
-        { categories: { $in: blog.categories } },
-        { tags: { $in: blog.tags } },
-      ],
-      status: "Published",
-    })
-      .select("title slug coverImage createdAt")
-      .limit(4);
+    // const relatedBlogs = await Blog.find({
+    //   _id: { $ne: blog._id },
+    //   $or: [
+    //     { categories: { $in: blog.categories } },
+    //     { tags: { $in: blog.tags } },
+    //   ],
+    //   status: "Published",
+    // })
+    //   .select("title slug coverImage createdAt")
+    //   .limit(1);
 
     res.status(200).json({
       success: true,
       blog,
-      relatedBlogs,
     });
   } catch (error) {
     console.error("getSingleBlogById error:", error);

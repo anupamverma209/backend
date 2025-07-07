@@ -747,10 +747,18 @@ exports.getSingleProductById = async (req, res) => {
         message: "Product not found or not approved",
       });
     }
+    const suggestedProducts = await Product.find({
+      _id: { $ne: id },
+      category: product.category._id,
+      status: "Approved",
+    })
+      .limit(5)
+      .select("title price images");
 
     res.status(200).json({
       success: true,
       data: product,
+      suggestedProducts,
     });
   } catch (err) {
     console.error(err);
