@@ -101,8 +101,4 @@ const blogSchema = new mongoose.Schema(
   }
 );
 
-<<<<<<< HEAD
 module.exports = mongoose.model("Blog", blogSchema);
-=======
-module.exports = mongoose.model("Blog", blogSchema);
->>>>>>> refs/remotes/origin/master

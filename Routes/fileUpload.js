@@ -7,14 +7,9 @@ const {
   updateProduct,
   getSingleProduct,
   deleteProduct,
-<<<<<<< HEAD
   getSingleProductById,
   getAllProductsforHome,
   getAllProducts,
-=======
-  getAllProductsforHome,
-  getSingleProductById,
->>>>>>> refs/remotes/origin/master
 } = require("../Controllers/product");
 const { auth, isSeller } = require("../Middleware/Auth");
 const {

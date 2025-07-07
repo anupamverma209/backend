@@ -1,15 +1,6 @@
 const router = require("express").Router();
 // const getAllCards = require("../Controllers/Card");
-const {
-  createBlog,
-  updateBlog,
-  deleteBlog,
-  getSingleBlogById,
-  getAllBlogs,
-  commentOnBlog,
-  deleteComment,
-  incrementViews,
-} = require("../Controllers/blogController");
+
 const {
   signup,
   verifyOtp,
