@@ -175,14 +175,10 @@ exports.getSingleBlogById = async (req, res) => {
     }
 
     // 2️⃣ find blog by ID
-<<<<<<< HEAD
     const blog = await Blog.findById(id).populate(
       "comments.user",
       "name email"
     );
-=======
-    const blog = await Blog.findById(id).populate("author", "name email");
->>>>>>> refs/remotes/origin/master
     if (!blog) {
       return res.status(404).json({
         success: false,
@@ -191,7 +187,6 @@ exports.getSingleBlogById = async (req, res) => {
     }
 
     // 3️⃣ related blogs
-<<<<<<< HEAD
     // const relatedBlogs = await Blog.find({
     //   _id: { $ne: blog._id },
     //   $or: [
@@ -202,26 +197,10 @@ exports.getSingleBlogById = async (req, res) => {
     // })
     //   .select("title slug coverImage createdAt")
     //   .limit(1);
-=======
-    const relatedBlogs = await Blog.find({
-      _id: { $ne: blog._id },
-      $or: [
-        { categories: { $in: blog.categories } },
-        { tags: { $in: blog.tags } },
-      ],
-      status: "Published",
-    })
-      .select("title slug coverImage createdAt")
-      .limit(4);
->>>>>>> refs/remotes/origin/master
 
     res.status(200).json({
       success: true,
       blog,
-<<<<<<< HEAD
-=======
-      relatedBlogs,
->>>>>>> refs/remotes/origin/master
     });
   } catch (error) {
     console.error("getSingleBlogById error:", error);
@@ -427,8 +406,4 @@ exports.incrementViews = async (req, res) => {
       message: "Server error",
     });
   }
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> refs/remotes/origin/master
