@@ -1,6 +1,16 @@
 const router = require("express").Router();
 // const getAllCards = require("../Controllers/Card");
 const {
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getSingleBlogById,
+  getAllBlogs,
+  commentOnBlog,
+  deleteComment,
+  incrementViews,
+} = require("../Controllers/blogController");
+const {
   signup,
   verifyOtp,
   reSendOtp,
@@ -20,6 +30,11 @@ const {
 const {
   getUserProfile,
   changePassword,
+  updateUserProfile,
+  addToCartController,
+  removeCartItem,
+  addToWishlistController,
+  removeFromWishlistController
 } = require("../Controllers/userProfileController");
 const {
   createOrder,
@@ -30,6 +45,7 @@ const {
   getAllOrders,
   deleteOrder,
 } = require("../Controllers/userOrderController");
+const User = require("../Models/user");
 
 // router.get("/cards", getAllCards);
 
@@ -38,7 +54,7 @@ router.post("/verify-otp", verifyOtpAndLogin); // mobile number login user
 router.post("/logout", auth, logout);
 router.post("/signup", signup);
 //router.post("/signupByMobile", SignupByMobile);
-router.post("/verify", verifyOtp);
+router.post("/verify", verifyOtp);//email login signup varification
 router.post("/login", Login);
 router.post("/reSendOtp", reSendOtp);
 // All Review Controllers
@@ -69,13 +85,34 @@ router.get("/Admin", auth, isSeller, (req, res) => {
   });
 });
 
-router.get("/User", auth, isUser, (req, res) => {
-  res.send("Welcome to the User dashboard");
-  res.status(200).json({
-    message: "User authenticated successfully",
-    success: true,
-    user: req.user,
-  });
+router.get("/User", auth, isUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select("-password -confirmPassword")
+      .populate("addtocart")
+      .populate("orders")
+      .populate("addtowishlist");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User authenticated successfully",
+      user: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching user data",
+      error: error.message,
+    });
+  }
 });
 
 router.get("/Seller", auth, isSeller, (req, res) => {
@@ -86,5 +123,20 @@ router.get("/Seller", auth, isSeller, (req, res) => {
     user: req.user,
   });
 });
+router.put("/updateUserProfile", auth, updateUserProfile);
+router.post("/addtocart/:productid",auth,isUser,addToCartController)
+router.patch("/removeitem/:productid", auth,isUser, removeCartItem);
+router.post("/addtowishlist/:productid", auth,isUser, addToWishlistController);
+router.patch("/removefromwishlist/:productid", auth,isUser,removeFromWishlistController);
+
+router.post("/createBlog", auth, createBlog); // create blog
+router.put("/updateBlog/:id", auth, updateBlog); // update blog
+router.delete("/deleteBlog/:id", auth, deleteBlog);
+router.get("/getSingleBlogById/:id", getSingleBlogById);
+router.get("/getAllBlogs", getAllBlogs); // first test this route
+router.post("/commentOnBlog/:id", auth, commentOnBlog);
+router.delete("/blogs/:blogId/comments/:commentId", auth, deleteComment);
+router.patch("/blogs/:id/views", incrementViews);
+
 
 module.exports = router;
