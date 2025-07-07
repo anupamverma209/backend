@@ -94,16 +94,25 @@ const verifyOtp = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
+    // ❌ OTP doesn't match
     if (user.otp !== otp) {
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
+      await User.deleteOne({ email });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP. User data deleted.",
+      });
     }
 
+    // ❌ OTP expired
     if (user.otpExpires < new Date()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "OTP has expired" });
+      await User.deleteOne({ email });
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. User data deleted.",
+      });
     }
 
+    // ✅ OTP is valid
     user.isEmailVerified = true;
     user.otp = undefined;
     user.otpExpires = undefined;
@@ -117,6 +126,7 @@ const verifyOtp = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // Re-send OTP to email for verification
 // This method allows users to request a new OTP if they didn't receive the first one or if

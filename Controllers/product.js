@@ -760,3 +760,23 @@ exports.getSingleProductById = async (req, res) => {
     });
   }
 };
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ status: "Approved" })
+      .sort({ createdAt: -1 }) // latest first
+      .populate('category')     // populate category
+      .populate('subCategory'); // populate subCategory
+
+    res.status(200).json({
+      success: true,
+      data: products,
+      count: products.length,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching products",
+    });
+  }
+};
