@@ -716,7 +716,7 @@ exports.getAllProductsforHome = async (req, res) => {
       .populate("category", "name")
       .populate("subCategory", "name")
       .sort({ createdAt: -1 }) // latest first
-      .limit();
+      .limit(4);
 
     res.status(200).json({
       success: true,
