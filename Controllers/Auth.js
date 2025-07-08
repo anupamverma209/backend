@@ -1,4 +1,4 @@
-const User = require("../Models/user");
+const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -126,7 +126,6 @@ const verifyOtp = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 // Re-send OTP to email for verification
 // This method allows users to request a new OTP if they didn't receive the first one or if

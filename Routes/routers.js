@@ -8,7 +8,6 @@ const {
   getAllBlogs,
   commentOnBlog,
   deleteComment,
-  incrementViews,
 } = require("../Controllers/blogController");
 const {
   signup,
@@ -32,13 +31,10 @@ const {
   getUserProfile,
   changePassword,
   updateUserProfile,
-<<<<<<< HEAD
   addToCartController,
   removeCartItem,
   addToWishlistController,
-  removeFromWishlistController
-=======
->>>>>>> refs/remotes/origin/master
+  removeFromWishlistController,
 } = require("../Controllers/userProfileController");
 const {
   createOrder,
@@ -49,20 +45,7 @@ const {
   getAllOrders,
   deleteOrder,
 } = require("../Controllers/userOrderController");
-<<<<<<< HEAD
-const User = require("../Models/user");
-=======
-const {
-  createBlog,
-  updateBlog,
-  deleteBlog,
-  getSingleBlogById,
-  getAllBlogs,
-  commentOnBlog,
-  deleteComment,
-  incrementViews,
-} = require("../Controllers/blogController");
->>>>>>> refs/remotes/origin/master
+const User = require("../Models/User");
 
 // router.get("/cards", getAllCards);
 const { addToCart, getCart } = require("../Controllers/Card");
@@ -72,12 +55,8 @@ router.post("/send-otp", sendOtp); // mobile number signup
 router.post("/verify-otp", verifyOtpAndLogin); // mobile number login user
 router.post("/logout", auth, logout);
 router.post("/signup", signup);
-<<<<<<< HEAD
 //router.post("/signupByMobile", SignupByMobile);
-router.post("/verify", verifyOtp);//email login signup varification
-=======
-router.post("/verify", verifyOtp);
->>>>>>> refs/remotes/origin/master
+router.post("/verify", verifyOtp); //email login signup varification
 router.post("/login", Login);
 router.post("/reSendOtp", reSendOtp);
 
@@ -103,7 +82,6 @@ router.put("/updateOrderStatus:id", auth, isAdmin, updateOrderStatus); // only f
 router.get("/getAllOrders", auth, isAdmin, getAllOrders); //private route for admin to get
 router.delete("/deleteOrder:id", auth, deleteOrder); // delete order by id
 
-<<<<<<< HEAD
 // private routes for different user roles
 router.get("/Admin", auth, isSeller, (req, res) => {
   res.send("Welcome to the Admin dashboard");
@@ -153,31 +131,25 @@ router.get("/Seller", auth, isSeller, (req, res) => {
   });
 });
 router.put("/updateUserProfile", auth, updateUserProfile);
-router.post("/addtocart/:productid",auth,isUser,addToCartController)
-router.patch("/removeitem/:productid", auth,isUser, removeCartItem);
-router.post("/addtowishlist/:productid", auth,isUser, addToWishlistController);
-router.patch("/removefromwishlist/:productid", auth,isUser,removeFromWishlistController);
+router.post("/addtocart/:productid", auth, isUser, addToCartController);
+router.patch("/removeitem/:productid", auth, isUser, removeCartItem);
+router.post("/addtowishlist/:productid", auth, isUser, addToWishlistController);
+router.patch(
+  "/removefromwishlist/:productid",
+  auth,
+  isUser,
+  removeFromWishlistController
+);
 
 router.post("/createBlog", auth, createBlog); // create blog
 router.put("/updateBlog/:id", auth, updateBlog); // update blog
 router.delete("/deleteBlog/:id", auth, deleteBlog);
 router.get("/getSingleBlogById/:id", getSingleBlogById);
-=======
-// Blog Routes
-router.post("/createBlog", auth, createBlog); // create blog
-router.put("/updateBlog/:id", auth, updateBlog); // update blog
-router.delete("/deleteBlog/:id", auth, deleteBlog);
-router.get("/getSingleBlogById/:id", auth, getSingleBlogById);
->>>>>>> refs/remotes/origin/master
 router.get("/getSingleBlogById/:id", getSingleBlogById);
 router.get("/getAllBlogs", getAllBlogs); // first test this route
 router.post("/commentOnBlog/:id", auth, commentOnBlog);
 router.delete("/blogs/:blogId/comments/:commentId", auth, deleteComment);
-router.patch("/blogs/:id/views", incrementViews);
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/master
+// router.patch("/blogs/:id/views", incrementViews);
 
 // Add to Card
 
