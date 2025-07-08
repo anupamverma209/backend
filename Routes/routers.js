@@ -47,8 +47,6 @@ const {
 } = require("../Controllers/userOrderController");
 const User = require("../Models/User");
 
-// router.get("/cards", getAllCards);
-const { addToCart, getCart } = require("../Controllers/Card");
 const createContact = require("../Controllers/contactUsController");
 
 router.post("/send-otp", sendOtp); // mobile number signup
@@ -150,12 +148,6 @@ router.get("/getAllBlogs", getAllBlogs); // first test this route
 router.post("/commentOnBlog/:id", auth, commentOnBlog);
 router.delete("/blogs/:blogId/comments/:commentId", auth, deleteComment);
 // router.patch("/blogs/:id/views", incrementViews);
-
-// Add to Card
-
-// Add to Card
-router.post("/addToCart", auth, isUser, addToCart);
-router.get("/getCart", auth, isUser, getCart);
 
 // contact US Route
 
