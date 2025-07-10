@@ -6,6 +6,7 @@ const sendEmail = require("../Utils/SendMail");
 const { crypto } = require("crypto");
 const sendOtpToMobile = require("../Utils/SMSotp");
 const Mobile = require("../Models/mobil");
+const { error } = require("console");
 
 const generateOtp = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
@@ -388,6 +389,118 @@ const logout = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // 1. Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User with this email not found" });
+    }
+
+    // 2. Generate 6-digit OTP
+    const otp = generateOtp();
+
+    // 3. Set OTP & expiry on user (save in DB)
+    user.otp = otp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 minutes from now
+    await user.save();
+
+    // 4. Send OTP via email
+    try {
+      await sendEmail(
+        email,
+        "Verify your email",
+        `Your OTP is ${otp}. It will expire in 5 minutes.<br>You requested a password reset.</br>`
+      );
+    } catch (error) {
+      console.error("Error sending OTP email:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to send OTP email" });
+    }
+
+    // 5. Response
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to your email",
+    });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword, confirmPassword } = req.body;
+
+    // 1. Validation
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords do not match" });
+    }
+
+    // 2. Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // 3. Verify OTP and expiry
+    if (user.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP not match",
+      });
+    }
+
+    // 4. Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 5. Update user password & clear OTP
+    user.password = hashedPassword;
+    user.Otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    // 6. Optional: Auto Sign-in (return JWT token)
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.accountType,
+      },
+    });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
 // const SignupByMobile = async (req, res) => {
 //   try {
 //     const { number } = req.body;
@@ -431,4 +544,6 @@ module.exports = {
   sendOtp,
   verifyOtpAndLogin,
   logout,
+  forgotPassword,
+  resetPassword,
 };

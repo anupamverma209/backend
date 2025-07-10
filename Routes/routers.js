@@ -18,9 +18,10 @@ const {
   verifyOtpAndLogin,
   logout,
   SignupByMobile,
+  forgotPassword,
+  resetPassword,
 } = require("../Controllers/Auth");
 const { auth, isAdmin, isUser, isSeller } = require("../Middleware/Auth");
-const { upload } = require("../Middleware/upload");
 const {
   createReview,
   updateReview,
@@ -57,6 +58,8 @@ router.post("/signup", signup);
 router.post("/verify", verifyOtp); //email login signup varification
 router.post("/login", Login);
 router.post("/reSendOtp", reSendOtp);
+router.post("/forgotPassword", forgotPassword);
+router.post("/resetPassword", resetPassword);
 
 // signup By mobile number
 

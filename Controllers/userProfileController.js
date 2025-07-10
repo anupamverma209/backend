@@ -14,9 +14,9 @@ async function fileUploadToCloudinary(file, folder, type) {
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id; // JWT se aya hua user
-    const user = await User.findById(userId).select(
-      "-password -confirmPassword -otp -otpExpires"
-    );
+    const user = await User.findById(userId)
+      .select("-password -confirmPassword -otp -otpExpires")
+      .populate("orders");
 
     if (!user) {
       return res
