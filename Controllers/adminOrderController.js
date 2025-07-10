@@ -1,7 +1,7 @@
 // controllers/orderController.js
 
 const Order = require("../Models/Order");
-const User = require("../Models/user");
+const User = require("../Models/User");
 const Product = require("../Models/Product");
 const Notification = require("../Models/Notification");
 

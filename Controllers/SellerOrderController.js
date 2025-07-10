@@ -1,6 +1,6 @@
 const Order = require("../Models/Order");
 const Product = require("../Models/Product");
-const User = require("../Models/user");
+const User = require("../Models/User");
 
 exports.getSellerOrders = async (req, res) => {
   try {

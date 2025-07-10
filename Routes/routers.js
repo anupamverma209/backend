@@ -1,6 +1,14 @@
 const router = require("express").Router();
 // const getAllCards = require("../Controllers/Card");
-
+const {
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getSingleBlogById,
+  getAllBlogs,
+  commentOnBlog,
+  deleteComment,
+} = require("../Controllers/blogController");
 const {
   signup,
   verifyOtp,
@@ -10,9 +18,10 @@ const {
   verifyOtpAndLogin,
   logout,
   SignupByMobile,
+  forgotPassword,
+  resetPassword,
 } = require("../Controllers/Auth");
 const { auth, isAdmin, isUser, isSeller } = require("../Middleware/Auth");
-const { upload } = require("../Middleware/upload");
 const {
   createReview,
   updateReview,
@@ -26,7 +35,7 @@ const {
   addToCartController,
   removeCartItem,
   addToWishlistController,
-  removeFromWishlistController
+  removeFromWishlistController,
 } = require("../Controllers/userProfileController");
 const {
   createOrder,
@@ -37,28 +46,20 @@ const {
   getAllOrders,
   deleteOrder,
 } = require("../Controllers/userOrderController");
-const User = require("../Models/user");
-const {
-  createBlog,
-  updateBlog,
-  deleteBlog,
-  getSingleBlogById,
-  getAllBlogs,
-  commentOnBlog,
-  deleteComment,
-  incrementViews,
-} = require("../Controllers/blogController");
+const User = require("../Models/User");
 
-// router.get("/cards", getAllCards);
+const createContact = require("../Controllers/contactUsController");
 
 router.post("/send-otp", sendOtp); // mobile number signup
 router.post("/verify-otp", verifyOtpAndLogin); // mobile number login user
 router.post("/logout", auth, logout);
 router.post("/signup", signup);
 //router.post("/signupByMobile", SignupByMobile);
-router.post("/verify", verifyOtp);//email login signup varification
+router.post("/verify", verifyOtp); //email login signup varification
 router.post("/login", Login);
 router.post("/reSendOtp", reSendOtp);
+router.post("/forgotPassword", forgotPassword);
+router.post("/resetPassword", resetPassword);
 
 // signup By mobile number
 
@@ -131,19 +132,28 @@ router.get("/Seller", auth, isSeller, (req, res) => {
   });
 });
 router.put("/updateUserProfile", auth, updateUserProfile);
-router.post("/addtocart/:productid",auth,isUser,addToCartController)
-router.patch("/removeitem/:productid", auth,isUser, removeCartItem);
-router.post("/addtowishlist/:productid", auth,isUser, addToWishlistController);
-router.patch("/removefromwishlist/:productid", auth,isUser,removeFromWishlistController);
+router.post("/addtocart/:productid", auth, isUser, addToCartController);
+router.patch("/removeitem/:productid", auth, isUser, removeCartItem);
+router.post("/addtowishlist/:productid", auth, isUser, addToWishlistController);
+router.patch(
+  "/removefromwishlist/:productid",
+  auth,
+  isUser,
+  removeFromWishlistController
+);
 
 router.post("/createBlog", auth, createBlog); // create blog
 router.put("/updateBlog/:id", auth, updateBlog); // update blog
 router.delete("/deleteBlog/:id", auth, deleteBlog);
 router.get("/getSingleBlogById/:id", getSingleBlogById);
+router.get("/getSingleBlogById/:id", getSingleBlogById);
 router.get("/getAllBlogs", getAllBlogs); // first test this route
 router.post("/commentOnBlog/:id", auth, commentOnBlog);
 router.delete("/blogs/:blogId/comments/:commentId", auth, deleteComment);
-router.patch("/blogs/:id/views", incrementViews);
+// router.patch("/blogs/:id/views", incrementViews);
 
+// contact US Route
+
+router.post("/createContact", createContact);
 
 module.exports = router;

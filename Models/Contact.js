@@ -4,8 +4,14 @@ const contactSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
       trim: true,
+    },
+    phone:{
+       type:Number,
+    },
+    category:{
+      type:String,
+      enum:["Genral Inquiry","Order Support","Product Question","Shipping & Returns","Technical Support", "Billing & Payment","Complaint","Other"]
     },
 
     email: {
@@ -30,12 +36,6 @@ const contactSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // Optional: agar logged-in user ne bheja ho
-    },
-
-    status: {
-      type: String,
-      enum: ["Pending", "In Progress", "Resolved", "Closed"],
-      default: "Pending",
     },
 
     isReplied: {

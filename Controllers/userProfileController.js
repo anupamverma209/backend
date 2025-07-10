@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require("../Models/user");
+const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const Product=require("../Models/Product")
@@ -14,9 +14,9 @@ async function fileUploadToCloudinary(file, folder, type) {
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id; // JWT se aya hua user
-    const user = await User.findById(userId).select(
-      "-password -confirmPassword -otp -otpExpires"
-    ).populate("orders");
+    const user = await User.findById(userId)
+      .select("-password -confirmPassword -otp -otpExpires")
+      .populate("orders");
 
     if (!user) {
       return res
@@ -155,13 +155,17 @@ exports.addToCartController = async (req, res) => {
     const { productid } = req.params;
 
     if (!productid) {
-      return res.status(400).json({ success: false, message: "Product ID is missing in URL." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Product ID is missing in URL." });
     }
 
     // Check if product exists
     const product = await Product.findById(productid);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found." });
     }
 
     // Find the user
@@ -169,7 +173,9 @@ exports.addToCartController = async (req, res) => {
 
     // Check if product is already in cart
     if (user.addtocart.includes(productid)) {
-      return res.status(409).json({ success: false, message: "Product already in cart." });
+      return res
+        .status(409)
+        .json({ success: false, message: "Product already in cart." });
     }
 
     // Add product to cart
@@ -186,8 +192,6 @@ exports.addToCartController = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
 
 exports.removeCartItem = async (req, res) => {
   try {
@@ -219,7 +223,6 @@ exports.removeCartItem = async (req, res) => {
   }
 };
 
-
 // Add to Wishlist
 exports.addToWishlistController = async (req, res) => {
   try {
@@ -227,18 +230,24 @@ exports.addToWishlistController = async (req, res) => {
     const { productid } = req.params;
 
     if (!productid) {
-      return res.status(400).json({ success: false, message: "Product ID is missing in URL." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Product ID is missing in URL." });
     }
 
     const product = await Product.findById(productid);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found." });
     }
 
     const user = await User.findById(userId);
 
     if (user.addtowishlist.includes(productid)) {
-      return res.status(409).json({ success: false, message: "Product already in wishlist." });
+      return res
+        .status(409)
+        .json({ success: false, message: "Product already in wishlist." });
     }
 
     user.addtowishlist.push(productid);
@@ -279,10 +288,11 @@ exports.removeFromWishlistController = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json({ message: "Item removed from wishlist successfully" });
+    res
+      .status(200)
+      .json({ message: "Item removed from wishlist successfully" });
   } catch (error) {
     console.error("Remove Wishlist Item Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
-
