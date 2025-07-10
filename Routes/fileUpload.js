@@ -29,7 +29,6 @@ router.put("/updateProduct:id", auth, isSeller, updateProduct);
 router.get("/getSingleProduct:id", auth, isSeller, getSingleProduct);
 router.delete("/deleteProduct:id", auth, isSeller, deleteProduct);
 
-
 // Seller Order Routers
 router.get("/getOrders", auth, getSellerOrders);
 router.put("/UpdateOrder:id", auth, updateOrderStatusBySeller);
@@ -38,10 +37,9 @@ router.put("/UpdateOrder:id", auth, updateOrderStatusBySeller);
 router.get("/getSellerStats", auth, isSeller, getSellerStats);
 router.get("/getMonthlySalesData", auth, isSeller, getMonthlySalesData);
 router.get("/getTopSellingProduct", auth, isSeller, getTopSellingProduct);
-router.get("/getAllProductsforHome",getAllProductsforHome)
+router.get("/getAllProductsforHome", getAllProductsforHome);
 router.get("/getSingleProductById/:id", getSingleProductById);
-router.get("/getallproductforcategory",getAllProducts)
-
+router.get("/getallproductforcategory", getAllProducts);
 
 //get All Product
 router.get("/getAllProductsforHome", getAllProductsforHome);

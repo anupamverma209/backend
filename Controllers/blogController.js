@@ -173,6 +173,11 @@ exports.getSingleBlogById = async (req, res) => {
         message: "Invalid blog id",
       });
     }
+    const blogviews = await Blog.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
 
     // 2️⃣ find blog by ID
     const blog = await Blog.findById(id).populate(
@@ -201,6 +206,7 @@ exports.getSingleBlogById = async (req, res) => {
     res.status(200).json({
       success: true,
       blog,
+      blogviews,
     });
   } catch (error) {
     console.error("getSingleBlogById error:", error);
@@ -377,33 +383,34 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
-exports.incrementViews = async (req, res) => {
-  try {
-    const { id } = req.params;
+// views add in getSingle blog by id
+// exports.incrementViews = async (req, res) => {
+//   try {
+//     const { id } = req.params;
 
-    const blog = await Blog.findByIdAndUpdate(
-      id,
-      { $inc: { views: 1 } },
-      { new: true }
-    );
+//     const blog = await Blog.findByIdAndUpdate(
+//       id,
+//       { $inc: { views: 1 } },
+//       { new: true }
+//     );
 
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: "Blog not found",
-      });
-    }
+//     if (!blog) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Blog not found",
+//       });
+//     }
 
-    res.status(200).json({
-      success: true,
-      message: "Views incremented",
-      views: blog.views,
-    });
-  } catch (error) {
-    console.error("incrementViews error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       message: "Views incremented",
+//       views: blog.views,
+//     });
+//   } catch (error) {
+//     console.error("incrementViews error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// };

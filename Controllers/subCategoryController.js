@@ -1,5 +1,5 @@
 const SubCategory = require("../Models/SubCategory");
-const Product = require("../models/Product");
+const Product = require("../Models/Product");
 const slugify = require("slugify");
 
 //  Create SubCategory
