@@ -1,13 +1,16 @@
 const Order = require("../Models/Order");
 const Product = require("../Models/Product");
 const mongoose = require("mongoose");
+const User = require("../Models/user");
 
 // create order by user only with user is User role based othentiation
+
+
 exports.createOrder = async (req, res) => {
   try {
     const { orderItems, shippingInfo, paymentMethod, totalAmount } = req.body;
 
-    //  Validation
+    // 1. Validation
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({
         success: false,
@@ -22,9 +25,9 @@ exports.createOrder = async (req, res) => {
       });
     }
 
+    // 2. Verify each product and calculate total
     let calculatedTotal = 0;
 
-    // Verify each product and calculate total
     for (let item of orderItems) {
       const product = await Product.findById(item.product);
 
@@ -42,11 +45,10 @@ exports.createOrder = async (req, res) => {
         });
       }
 
-      // Total Calculation
       calculatedTotal += item.price * item.quantity;
     }
 
-    //  Total Match Verification
+    // 3. Total match verification
     if (calculatedTotal !== totalAmount) {
       return res.status(400).json({
         success: false,
@@ -54,7 +56,7 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    //  Create Order
+    // 4. Create Order
     const order = await Order.create({
       user: req.user.id,
       orderItems,
@@ -65,18 +67,31 @@ exports.createOrder = async (req, res) => {
       isPaid: paymentMethod === "Online" ? false : true,
     });
 
-    // Reduce Stock
+    // 5. Push order ID into user's orders array
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    user.orders.push(order._id);
+    await user.save();
+
+    // 6. Reduce stock for each product
     for (let item of orderItems) {
       await Product.findByIdAndUpdate(item.product, {
         $inc: { stock: -item.quantity },
       });
     }
 
+    // 7. Send response
     res.status(201).json({
       success: true,
       message: "Order placed successfully",
       order,
     });
+
   } catch (err) {
     console.error("Error while creating order:", err);
     res.status(500).json({

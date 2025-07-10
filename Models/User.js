@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema({
   // ✅ Fixed: Arrays of references
   addtowishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   addtocart: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }]
+  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }]
 });
 
-module.exports = mongoose.model("User", userSchema);
+// module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);
