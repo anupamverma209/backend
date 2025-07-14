@@ -42,6 +42,12 @@ const {
   getRecentOrders,
   getMonthlyRevenueChart,
 } = require("../Controllers/adminDashboardController");
+const {
+  createBanner,
+  getAllBanners,
+  updateBanner,
+  deleteBanner,
+} = require("../Controllers/BannerController");
 
 // Create, Update, Delete, and Get Categories
 router.post("/createCategory", auth, isAdmin, createCategory);
@@ -82,5 +88,11 @@ router.get("/getOverviewStats", auth, isAdmin, getOverviewStats);
 router.get("/getTopSellingProducts", auth, isAdmin, getTopSellingProducts);
 router.get("/getRecentOrders", auth, isAdmin, getRecentOrders);
 router.get("/getMonthlyRevenueChart", auth, isAdmin, getMonthlyRevenueChart);
+
+// Banner Route
+router.post("/banner", auth, isAdmin, createBanner);
+router.put("/updateBanner/:id", auth, isAdmin, updateBanner);
+router.delete("/deleteBanner/:id", auth, isAdmin, deleteBanner);
+router.get("/getAllBanner", getAllBanners);
 
 module.exports = router;
