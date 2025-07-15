@@ -7,7 +7,6 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     orderItems: [
       {
         product: {
@@ -27,25 +26,25 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    // ✅ Connect to saved shipping address
-    shippingAddress: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ShippingAddress",
-      required: true,
+    shippingInfo: {
+      fullName: { type: String, required: true },
+      address: { type: String, required: true },
+      city: { type: String, required: true },
+      state: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      country: { type: String, default: "India" },
+      phone: { type: String, required: true },
     },
-
     paymentMethod: {
       type: String,
       enum: ["COD", "Online"],
       default: "COD",
     },
-
     paymentStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
-
     totalAmount: {
       type: Number,
       required: true,
@@ -53,7 +52,7 @@ const orderSchema = new mongoose.Schema(
 
     orderStatus: {
       type: String,
-      enum: ["Processing", "Shipped", "Delivered", "Cancelled", "Refunded"],
+      enum: ["Processing", "Shipped", "Delivered", "Cancelled", "refunded"],
       default: "Processing",
     },
 
@@ -61,7 +60,6 @@ const orderSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-
     isPaid: {
       type: Boolean,
       default: false,
