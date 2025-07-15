@@ -772,8 +772,8 @@ exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({ status: "Approved" })
       .sort({ createdAt: -1 }) // latest first
-      .populate('category')     // populate category
-      .populate('subCategory'); // populate subCategory
+      .populate("category", "name slug") // populate category
+      .populate("subCategory"); // populate subCategory
 
     res.status(200).json({
       success: true,

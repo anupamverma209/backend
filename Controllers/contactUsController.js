@@ -2,13 +2,15 @@ const Contact = require("../Models/Contact");
 
 const createContact = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, subject, message, phone, category } = req.body;
 
     const contact = new Contact({
       name,
       email,
       subject,
       message,
+      phone,
+      category,
       user: req.user ? req.user._id : undefined, // agar authenticated user hai
     });
 

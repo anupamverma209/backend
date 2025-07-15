@@ -42,6 +42,29 @@ const {
   getRecentOrders,
   getMonthlyRevenueChart,
 } = require("../Controllers/adminDashboardController");
+const {
+  createBanner,
+  getAllBanners,
+  updateBanner,
+  deleteBanner,
+} = require("../Controllers/BannerController");
+// const {
+//   createAttributeGroup,
+//   getAllAttributeGroups,
+//   updateAttributeGroup,
+//   deleteAttributeGroup,
+//   getAttributeGroupById,
+// } = require("../Controllers/attribute/attributeGroupController");
+// const {
+//   createAttributeValue,
+//   getValuesByGroupId,
+//   deleteAttributeValue,
+//   updateAttributeValue,
+// } = require("../Controllers/attribute/attributeValueController");
+// const {
+//   createProduct,
+//   getMyProducts,
+// } = require("../Controllers/productAdmin/productController");
 
 // Create, Update, Delete, and Get Categories
 router.post("/createCategory", auth, isAdmin, createCategory);
@@ -82,5 +105,28 @@ router.get("/getOverviewStats", auth, isAdmin, getOverviewStats);
 router.get("/getTopSellingProducts", auth, isAdmin, getTopSellingProducts);
 router.get("/getRecentOrders", auth, isAdmin, getRecentOrders);
 router.get("/getMonthlyRevenueChart", auth, isAdmin, getMonthlyRevenueChart);
+
+// Banner Route
+router.post("/banner", auth, isAdmin, createBanner);
+router.put("/updateBanner/:id", auth, isAdmin, updateBanner);
+router.delete("/deleteBanner/:id", auth, isAdmin, deleteBanner);
+router.get("/getAllBanner", getAllBanners);
+
+// Attribute Group
+// router.post("/createAttributeGroup", auth, isAdmin, createAttributeGroup);
+// router.get("/getAllAttributeGroup", getAllAttributeGroups);
+// router.put("/updateAttributeGroup/:id", auth, isAdmin, updateAttributeGroup);
+// router.delete("/deleteAttributeGroup/:id", auth, isAdmin, deleteAttributeGroup);
+// router.get("/getAttributeGroupById/:id", auth, isAdmin, getAttributeGroupById);
+
+// Group values route
+// router.post("/createAttributeValue", auth, isAdmin, createAttributeValue);
+// router.get("/getValuesByGroupId/:id", getValuesByGroupId);
+// router.delete("/deleteAttributeValue/:id", auth, isAdmin, deleteAttributeValue);
+// router.put("/updateAttributeValue/:id", auth, isAdmin, updateAttributeValue);
+
+// product Routes
+// router.post("/createProduct", auth, isAdmin, createProduct);
+// router.get("/getMyProducts", getMyProducts);
 
 module.exports = router;

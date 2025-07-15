@@ -9,6 +9,7 @@ const cloudinaryStorage = require("./Config/cloudinary");
 const fileupload = require("express-fileupload");
 const router = require("./Routes/fileUpload");
 const adminRouter = require("./Routes/admin");
+const addressrouter = require("./Routes/addressRoutes");
 
 // middleware to connect to the database
 connectDB();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/v1", routers);
 app.use("/api/v1/fileUpload", router);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/address", addressrouter);
 
 app.use(cookieParser());
 
@@ -27,8 +29,4 @@ app.use(cookieParser());
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-app.get("/home", (req, res) => {
-  res.send("Welcome to the Express.js server!");
 });

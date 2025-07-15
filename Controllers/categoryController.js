@@ -6,6 +6,7 @@ const slugify = require("slugify");
 const mongoose = require("mongoose");
 
 // create category controller
+
 exports.createCategory = async (req, res) => {
   try {
     const { name, subCategories } = req.body;

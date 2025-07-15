@@ -67,7 +67,7 @@ router.post("/resetPassword", resetPassword);
 router.post("/createRating", auth, isUser, createReview);
 router.put("/updateReview/:reviewId", auth, updateReview);
 router.delete("/deleteReview/:reviewId", auth, deleteReview);
-router.get("/getAllReviews/:productId", auth, getAllReviewsForProduct);
+router.get("/getAllReviews/:productId", getAllReviewsForProduct);
 
 // user profile route
 router.get("/userProfile", auth, getUserProfile);

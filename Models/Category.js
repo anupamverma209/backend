@@ -20,6 +20,11 @@ const categorySchema = new mongoose.Schema(
         ref: "SubCategory",
       },
     ],
+
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // admin/seller who created the attribute
+    },
   },
   { timestamps: true }
 );

@@ -18,7 +18,18 @@ const bannerSchema = new mongoose.Schema(
       maxlength: 500,
     },
 
-    image: {
+    coverImage: {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
+
+    backgroundImage: {
       public_id: {
         type: String,
         required: true,
@@ -35,11 +46,6 @@ const bannerSchema = new mongoose.Schema(
       default: "Custom",
     },
 
-    linkRef: {
-      type: String, // can be URL slug, product ID, or custom link
-      required: true,
-    },
-
     isActive: {
       type: Boolean,
       default: true,
@@ -49,6 +55,10 @@ const bannerSchema = new mongoose.Schema(
       type: String,
       enum: ["Homepage", "Sale", "Festival", "NewArrival", "Other"],
       default: "Homepage",
+    },
+    button: {
+      type: String, // can be URL slug, product ID, or custom link
+      required: true,
     },
 
     createdBy: {
