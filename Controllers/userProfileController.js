@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
-const Product = require("../Models/Product");
+const Product=require("../Models/Product")
+// const Product = require("../Models/Product");
 
 async function fileUploadToCloudinary(file, folder, type) {
   return await cloudinary.uploader.upload(file.tempFilePath, {
@@ -146,6 +147,8 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
+
+
 
 exports.addToCartController = async (req, res) => {
   try {

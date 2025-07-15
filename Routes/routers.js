@@ -77,7 +77,7 @@ router.put("/updateUserProfile", auth, updateUserProfile);
 // create order Router
 router.post("/createOrder", auth, isUser, createOrder);
 router.get("/getAllOrder", auth, isUser, getMyOrders);
-router.get("/getSingleOrder:id", auth, getSingleOrder);
+router.get("/getSingleOrder/:id", auth, getSingleOrder);
 router.put("/cancelOrder:id", auth, cancelOrder);
 router.put("/updateOrderStatus:id", auth, isAdmin, updateOrderStatus); // only for Admin
 router.get("/getAllOrders", auth, isAdmin, getAllOrders); //private route for admin to get
