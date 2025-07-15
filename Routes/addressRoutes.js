@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const addressController = require("../controllers/addressController");
+const addressController = require("../Controllers/addressController");
 const { auth } = require("../Middleware/Auth");
 
 // Create address
