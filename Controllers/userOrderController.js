@@ -2,10 +2,9 @@ const Order = require("../Models/Order");
 const Product = require("../Models/Product");
 const ShippingAddress = require("../Models/ShippingAddress");
 const mongoose = require("mongoose");
-const User = require("../Models/user");
+const User = require("../Models/User");
 
 // create order by user only with user is User role based othentiation
-
 
 exports.createOrder = async (req, res) => {
   try {
@@ -92,7 +91,6 @@ exports.createOrder = async (req, res) => {
       message: "Order placed successfully",
       order,
     });
-
   } catch (err) {
     console.error("Error while creating order:", err);
     res.status(500).json({
